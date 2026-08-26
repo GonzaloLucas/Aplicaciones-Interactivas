@@ -34,3 +34,6 @@ build/
 
 ### Dependencias ###
 pom.xml
+
+/target/
+/src/main/resources/application.properties
