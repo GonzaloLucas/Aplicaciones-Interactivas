@@ -1,11 +1,13 @@
 package com.uade.tpo.demo.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Data
@@ -15,7 +17,8 @@ public class Category {
     public Category() {
     }
 
-    public Category(String description) {
+    public Category(String name, String description) {
+        this.name = name;
         this.description = description;
     }
 
@@ -24,8 +27,11 @@ public class Category {
     private Long id;
 
     @Column
+    private String name;
+
+    @Column
     private String description;
 
-    @OneToOne(mappedBy = "category")
-    private Product product;
+    @OneToMany(mappedBy = "category")
+    private List<Product> products;
 }

@@ -5,33 +5,31 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Data
 @Entity
-public class Product {
+public class Address {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private String name;
+    private String street;
 
     @Column
-    private String description;
+    private String number;
 
     @Column
-    private Double price;
+    private String city;
 
     @Column
-    private Integer stock;
+    private String state;
 
     @Column
-    private String image;
+    private String postalCode;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    @Column
+    private String country;
 }
