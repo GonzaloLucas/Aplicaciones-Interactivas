@@ -39,10 +39,13 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Column
     private String password;
 
+    @Column
     private String firstName;
 
+    @Column
     private String lastName;
 
     @OneToOne
