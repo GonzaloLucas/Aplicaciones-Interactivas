@@ -53,4 +53,10 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/discount")
+    public ResponseEntity<Product> applyDiscount(@PathVariable Long id, @RequestBody DiscountRequest request) {
+        Product product = productService.applyDiscount(id, request.getDiscountPercentage());
+        return ResponseEntity.ok(product);
+    }
 }

@@ -1,5 +1,7 @@
 package com.uade.tpo.demo.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,4 +36,17 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @Column
+    private Double discountPercentage;
+
+    public Double getFinalPrice() {
+        if (discountPercentage == null || discountPercentage <= 0) {
+            return price;
+        }
+
+        Double discount = price * discountPercentage / 100;
+
+        return price - discount;
+    }
 }
