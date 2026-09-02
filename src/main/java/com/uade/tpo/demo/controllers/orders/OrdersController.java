@@ -3,6 +3,7 @@ package com.uade.tpo.demo.controllers.orders;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Order;
 import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
+import com.uade.tpo.demo.exceptions.OrderDuplicateException;
 import com.uade.tpo.demo.service.CategoryService;
 import com.uade.tpo.demo.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,8 @@ public class OrdersController {
 
     @PostMapping
     public ResponseEntity<Object> createOrder(@RequestBody OrdersRequest ordersRequest)
-            throws CategoryDuplicateException {
-        Order result = orderService.createOrder((Double) ordersRequest.getTotal());
+            throws OrderDuplicateException {
+        Order result = orderService.createOrder(ordersRequest.getTotal());
         return ResponseEntity.created(URI.create("/orders/" + result.getId())).body(result);
     }
 }

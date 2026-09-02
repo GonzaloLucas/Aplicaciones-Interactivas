@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "orders")
 public class Order {
 
     @Builder

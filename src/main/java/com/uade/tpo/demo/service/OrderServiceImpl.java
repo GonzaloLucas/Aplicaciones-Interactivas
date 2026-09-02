@@ -3,6 +3,7 @@ package com.uade.tpo.demo.service;
 import com.uade.tpo.demo.controllers.config.JwtService;
 import com.uade.tpo.demo.entity.Order;
 import com.uade.tpo.demo.entity.User;
+import com.uade.tpo.demo.exceptions.OrderDuplicateException;
 import com.uade.tpo.demo.repository.OrderRepository;
 import com.uade.tpo.demo.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -45,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    public Order createOrder(Double total) {
+    public Order createOrder(Double total) throws OrderDuplicateException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
