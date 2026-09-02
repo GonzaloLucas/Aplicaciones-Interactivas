@@ -42,10 +42,6 @@ public class User implements UserDetails {
 
     private String lastName;
 
-    @OneToOne
-    @JoinColumn(name = "address_id", referencedColumnName = "id")
-    private Address address;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Cart cart;
 
