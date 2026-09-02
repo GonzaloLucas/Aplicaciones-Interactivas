@@ -12,12 +12,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "orders")
 public class Order {
+
+    @Builder
+    public Order(Double total, Long user_id) {
+        this.total = total;
+        this.user_id = user_id;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,9 +39,8 @@ public class Order {
     @Column
     private LocalDateTime createdAt;
 
-    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Long user_id;
 
     @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails;
