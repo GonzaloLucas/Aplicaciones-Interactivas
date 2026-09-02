@@ -15,7 +15,7 @@ import com.uade.tpo.demo.repository.CategoryRepository;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    @Autowired
+    @Autowired //inyeccion de categoryRepository
     private CategoryRepository categoryRepository;
 
     public Page<Category> getCategories(PageRequest pageable) {

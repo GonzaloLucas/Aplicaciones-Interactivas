@@ -17,8 +17,8 @@ public class Category {
     public Category() {
     }
 
-    public Category(String name, String description) {
-        this.name = name;
+    public Category( String description) {
+        
         this.description = description;
     }
 

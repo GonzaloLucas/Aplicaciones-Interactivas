@@ -26,7 +26,7 @@ public class Cart {
     private User user;
 
     @Column
-    private String status;
+    private String status;   //carrito actvo
 
     @Column
     private LocalDateTime createdAt;
