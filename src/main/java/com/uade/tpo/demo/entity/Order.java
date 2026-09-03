@@ -5,32 +5,38 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Data
+@Entity
+@Table(name = "orders")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Order {
 
-    @Builder
     public Order(Double total, Long user_id) {
         this.total = total;
         this.user_id = user_id;
+        this.status = OrderStatus.PENDING_PAYMENT;
+        this.createdAt = java.time.LocalDateTime.now();
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column
-    private String status;
+    private OrderStatus status;
 
     @Column
     private Double total;
@@ -43,4 +49,5 @@ public class Order {
 
     @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails;
+
 }
