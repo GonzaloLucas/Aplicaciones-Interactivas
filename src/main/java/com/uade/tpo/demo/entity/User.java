@@ -50,7 +50,7 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Cart cart;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user_id")
     private List<Order> orders;
 
     @Enumerated(EnumType.STRING)
