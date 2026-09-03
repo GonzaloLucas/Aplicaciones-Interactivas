@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Order updateOrder(Long orderId, String status) {
+    public Order updateOrder(Long orderId, String status, Double total) {
         return null;
     }
 

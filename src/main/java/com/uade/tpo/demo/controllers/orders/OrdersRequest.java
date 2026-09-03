@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class OrdersRequest {
     private Double total;
+    private String status;
 }

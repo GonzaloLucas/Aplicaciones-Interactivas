@@ -18,6 +18,6 @@ public interface OrderService {
     Order createOrder(Double total) throws OrderDuplicateException;
     Page<Order> getOrders(PageRequest pageRequest);
     Optional<Order> getOrderById(Long orderId);
-    Order updateOrder(Long orderId, String status);
+    Order updateOrder(Long orderId, String status, Double total);
     Page<Order> getOrdersByUserId(Long userId, PageRequest pageRequest);
 }
