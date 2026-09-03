@@ -29,9 +29,9 @@ public class OrdersController {
     }
 
     @GetMapping("/{OrderId}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long orderId)
+    public ResponseEntity<Order> getOrderById(@PathVariable Long OrderId)
     throws OrderNotFoundException {
-        Optional<Order> result = orderService.getOrderById(orderId);
+        Optional<Order> result = orderService.getOrderById(OrderId);
         if (result.isPresent())
             return ResponseEntity.ok(result.get());
 
@@ -49,6 +49,13 @@ public class OrdersController {
     public ResponseEntity<Object> updateOrder(@RequestBody OrdersRequest ordersRequest, @PathVariable Long OrderId)
             throws OrderNotFoundException {
         Order result = orderService.updateOrder(OrderId, ordersRequest.getStatus(), ordersRequest.getTotal());
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/{OrderId}")
+    public ResponseEntity<Object> deleteOrder(@PathVariable Long OrderId)
+            throws OrderNotFoundException {
+        Order result = orderService.deleteOrder(OrderId);
         return ResponseEntity.ok(result);
     }
 }

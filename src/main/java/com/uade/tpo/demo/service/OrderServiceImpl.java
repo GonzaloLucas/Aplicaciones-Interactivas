@@ -23,7 +23,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -32,8 +31,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired //inyeccion de orderRepository
     private OrderRepository orderRepository;
-    private final UserDetailsService userDetailsService;
-    private final JwtService jwtService;
     @Autowired
     private UserRepository userRepository;
 
@@ -67,6 +64,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<Order> getOrdersByUserId(Long userId, PageRequest pageRequest) {
+        return null;
+    }
+
+    @Override
+    public Order deleteOrder(Long orderId) {
         return null;
     }
 }
