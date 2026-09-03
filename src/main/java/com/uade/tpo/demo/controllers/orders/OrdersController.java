@@ -45,7 +45,7 @@ public class OrdersController {
         return ResponseEntity.created(URI.create("/orders/" + result.getId())).body(result);
     }
 
-    @PutMapping("/update/{OrderId}")
+    @PutMapping("/{OrderId}")
     public ResponseEntity<Object> updateOrder(@RequestBody OrdersRequest ordersRequest, @PathVariable Long OrderId)
             throws OrderNotFoundException {
         Order result = orderService.updateOrder(OrderId, ordersRequest.getStatus(), ordersRequest.getTotal());
