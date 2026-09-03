@@ -20,5 +20,5 @@ public interface OrderService {
     Optional<Order> getOrderById(Long orderId);
     Order updateOrder(Long orderId, String status, Double total);
     Page<Order> getOrdersByUserId(Long userId, PageRequest pageRequest);
-    Order deleteOrder(Long orderId);
+    void deleteOrder(Long orderId);
 }
