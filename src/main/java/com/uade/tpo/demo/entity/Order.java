@@ -3,16 +3,7 @@ package com.uade.tpo.demo.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,9 +15,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Order {
 
-    public Order(Double total, Long user_id) {
+    public Order(Double total, User user) {
         this.total = total;
-        this.user_id = user_id;
+        this.user = user;
         this.status = OrderStatus.PENDING_PAYMENT;
         this.createdAt = java.time.LocalDateTime.now();
     }
@@ -44,8 +35,9 @@ public class Order {
     @Column
     private LocalDateTime createdAt;
 
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private Long user_id;
+    private User user;
 
     @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails;

@@ -4,6 +4,7 @@ import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Order;
 import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
 import com.uade.tpo.demo.exceptions.OrderDuplicateException;
+import com.uade.tpo.demo.exceptions.OrderNotFoundException;
 import com.uade.tpo.demo.service.CategoryService;
 import com.uade.tpo.demo.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,9 @@ public class OrdersController {
     }
 
     @GetMapping("/{OrderId}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
-        Optional<Order> result = orderService.getOrderById(orderId);
+    public ResponseEntity<Order> getOrderById(@PathVariable Long OrderId)
+    throws OrderNotFoundException {
+        Optional<Order> result = orderService.getOrderById(OrderId);
         if (result.isPresent())
             return ResponseEntity.ok(result.get());
 
@@ -41,5 +43,19 @@ public class OrdersController {
             throws OrderDuplicateException {
         Order result = orderService.createOrder(ordersRequest.getTotal());
         return ResponseEntity.created(URI.create("/orders/" + result.getId())).body(result);
+    }
+
+    @PutMapping("/{OrderId}")
+    public ResponseEntity<Object> updateOrder(@RequestBody OrdersRequest ordersRequest, @PathVariable Long OrderId)
+            throws OrderNotFoundException {
+        Order result = orderService.updateOrder(OrderId, ordersRequest.getStatus(), ordersRequest.getTotal());
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/{OrderId}")
+    public ResponseEntity<Object> deleteOrder(@PathVariable Long OrderId)
+            throws OrderNotFoundException {
+        orderService.deleteOrder(OrderId);
+        return ResponseEntity.noContent().build();
     }
 }
