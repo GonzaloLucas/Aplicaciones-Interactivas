@@ -23,7 +23,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -32,8 +31,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired //inyeccion de orderRepository
     private OrderRepository orderRepository;
-    private final UserDetailsService userDetailsService;
-    private final JwtService jwtService;
     @Autowired
     private UserRepository userRepository;
 
@@ -51,9 +48,8 @@ public class OrderServiceImpl implements OrderService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         User user = userRepository.findUserByEmail(email);
-        Long user_id = user.getId();
 
-        return orderRepository.save(new Order(total, user_id));
+        return orderRepository.save(new Order(total, user));
     }
 
 
@@ -61,12 +57,17 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Order updateOrder(Long orderId, String status) {
+    public Order updateOrder(Long orderId, String status, Double total) {
         return null;
     }
 
     @Override
     public Page<Order> getOrdersByUserId(Long userId, PageRequest pageRequest) {
         return null;
+    }
+
+    @Override
+    public void deleteOrder(Long orderId) {
+        orderRepository.deleteById(orderId);
     }
 }
