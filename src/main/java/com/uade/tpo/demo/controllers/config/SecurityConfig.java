@@ -29,7 +29,8 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(req -> req
                                                 .requestMatchers("/api/v1/auth/**").permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-
+                                                .requestMatchers("/images/**").permitAll()
+                                                
                                                 // Productos: lectura libre, escritura solo ADMIN
                                                 .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/products/**").hasRole("ADMIN")
