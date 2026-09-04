@@ -41,17 +41,17 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column
     private String password;
 
+    @Column
     private String firstName;
 
+    @Column
     private String lastName;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Cart cart;
-
-    @OneToMany(mappedBy = "user_id")
-    private List<Order> orders;
 
     @Enumerated(EnumType.STRING)
     private Role role;

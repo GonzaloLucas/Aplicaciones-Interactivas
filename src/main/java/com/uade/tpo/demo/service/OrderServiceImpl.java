@@ -48,9 +48,8 @@ public class OrderServiceImpl implements OrderService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         User user = userRepository.findUserByEmail(email);
-        Long user_id = user.getId();
 
-        return orderRepository.save(new Order(total, user_id));
+        return orderRepository.save(new Order(total, user));
     }
 
 
