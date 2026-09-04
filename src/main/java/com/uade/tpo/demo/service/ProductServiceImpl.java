@@ -73,4 +73,20 @@ public class ProductServiceImpl implements ProductService {
         Product product = getProductById(id);
         productRepository.delete(product);
     }
+
+    @Override
+    public Product applyDiscount(Long productId, Double discountPercentage) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        if (discountPercentage == null ||
+            discountPercentage < 0 ||
+            discountPercentage > 100) {
+            throw new IllegalArgumentException("El descuento debe estar entre 0 y 100");
+        }
+
+        product.setDiscountPercentage(discountPercentage);
+
+        return productRepository.save(product);
+    }
 }

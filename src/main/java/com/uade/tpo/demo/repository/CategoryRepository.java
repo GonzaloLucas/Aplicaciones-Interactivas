@@ -13,4 +13,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query(value = "select c from Category c where c.description = ?1")
     List<Category> findByDescription(String description);
+
+    @Query(value = "select c from Category c where c.name = ?1")
+    List<Category> findByName(String name);
+
+    @Query(value = "select c from Category c where c.name = ?1 and c.description = ?2")
+    List<Category> findByNameAndDescription(String name, String description);
 }

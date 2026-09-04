@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import jakarta.servlet.DispatcherType;
+
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import lombok.RequiredArgsConstructor;
@@ -27,15 +29,17 @@ public class SecurityConfig {
                 http
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(req -> req
+                                                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                                                 .requestMatchers("/api/v1/auth/**").permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
                                                 // Productos: lectura libre, escritura solo ADMIN
                                                 .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
-                                                .requestMatchers(HttpMethod.POST, "/products/**").hasRole("ADMIN")
+                                                .requestMatchers(HttpMethod.POST,  "/products/**").hasRole("ADMIN")
                                                 .requestMatchers(HttpMethod.PUT, "/products/**").hasRole("ADMIN")
                                                 .requestMatchers(HttpMethod.PATCH, "/products/**").hasRole("ADMIN")
                                                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("ADMIN")
+                                                .requestMatchers(HttpMethod.PUT,"/products/*/discount").hasRole("ADMIN")
 
                                                 .anyRequest()
                                                 .authenticated())
