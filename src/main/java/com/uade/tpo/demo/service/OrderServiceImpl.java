@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -34,15 +35,18 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private UserRepository userRepository;
 
+    @Transactional
     public Page<Order> getOrders(PageRequest pageable) {
         return orderRepository.findAll(pageable);
     }
 
+    @Transactional
     public Optional<Order> getOrderById(Long orderId) {
         return orderRepository.findById(orderId);
     }
 
 
+    @Transactional
     public Order createOrder(Double total) throws OrderDuplicateException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -52,21 +56,17 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(new Order(total, user));
     }
 
-
-
-
-
-    @Override
+    @Transactional
     public Order updateOrder(Long orderId, String status, Double total) {
         return null;
     }
 
-    @Override
+    @Transactional
     public Page<Order> getOrdersByUserId(Long userId, PageRequest pageRequest) {
         return null;
     }
 
-    @Override
+    @Transactional
     public void deleteOrder(Long orderId) {
         orderRepository.deleteById(orderId);
     }
