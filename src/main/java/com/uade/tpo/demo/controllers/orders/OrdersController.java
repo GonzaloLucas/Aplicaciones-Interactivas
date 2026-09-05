@@ -41,20 +41,18 @@ public class OrdersController {
     @PostMapping
     public ResponseEntity<Object> createOrder(@RequestBody OrdersRequest ordersRequest)
             throws OrderDuplicateException {
-        Order result = orderService.createOrder(ordersRequest.getTotal());
+        Order result = orderService.createOrder(ordersRequest.getTotal(), ordersRequest.getStatus());
         return ResponseEntity.created(URI.create("/orders/" + result.getId())).body(result);
     }
 
     @PutMapping("/{OrderId}")
-    public ResponseEntity<Object> updateOrder(@RequestBody OrdersRequest ordersRequest, @PathVariable Long OrderId)
-            throws OrderNotFoundException {
+    public ResponseEntity<Object> updateOrder(@RequestBody OrdersRequest ordersRequest, @PathVariable Long OrderId) throws OrderNotFoundException {
         Order result = orderService.updateOrder(OrderId, ordersRequest.getStatus(), ordersRequest.getTotal());
         return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/{OrderId}")
-    public ResponseEntity<Object> deleteOrder(@PathVariable Long OrderId)
-            throws OrderNotFoundException {
+    public ResponseEntity<Object> deleteOrder(@PathVariable Long OrderId) {
         Optional<Order> result = orderService.getOrderById(OrderId);
         if (result.isPresent()){
             orderService.deleteOrder(OrderId);

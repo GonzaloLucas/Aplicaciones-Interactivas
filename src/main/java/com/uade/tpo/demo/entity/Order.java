@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Order {
 
-    public Order(Double total, User user) {
+    public Order(Double total, User user, OrderStatus status) {
         this.total = total;
         this.user = user;
-        this.status = OrderStatus.PENDING_PAYMENT;
+        this.status = status;
         this.createdAt = java.time.LocalDateTime.now();
     }
     @Id

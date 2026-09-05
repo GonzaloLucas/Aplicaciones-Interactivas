@@ -2,8 +2,10 @@ package com.uade.tpo.demo.service;
 
 import com.uade.tpo.demo.controllers.config.JwtService;
 import com.uade.tpo.demo.entity.Order;
+import com.uade.tpo.demo.entity.OrderStatus;
 import com.uade.tpo.demo.entity.User;
 import com.uade.tpo.demo.exceptions.OrderDuplicateException;
+import com.uade.tpo.demo.exceptions.OrderNotFoundException;
 import com.uade.tpo.demo.repository.OrderRepository;
 import com.uade.tpo.demo.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -47,23 +49,25 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Transactional
-    public Order createOrder(Double total) throws OrderDuplicateException {
+    public Order createOrder(Double total, OrderStatus status) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         User user = userRepository.findUserByEmail(email);
 
-        return orderRepository.save(new Order(total, user));
+        return orderRepository.save(new Order(total, user, status));
     }
 
     @Transactional
-    public Order updateOrder(Long orderId, String status, Double total) {
-        return null;
-    }
-
-    @Transactional
-    public Page<Order> getOrdersByUserId(Long userId, PageRequest pageRequest) {
-        return null;
+    public Order updateOrder(Long orderId, OrderStatus status, Double total) throws OrderNotFoundException {
+        Optional<Order> order = orderRepository.findById(orderId);
+        if (order.isPresent()) {
+            Order orderToUpdate = order.get();
+            orderToUpdate.setStatus(status);
+            orderToUpdate.setTotal(total);
+            return orderRepository.save(orderToUpdate);
+        }
+        throw new OrderNotFoundException();
     }
 
     @Transactional
