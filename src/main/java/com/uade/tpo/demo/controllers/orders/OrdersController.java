@@ -1,11 +1,7 @@
 package com.uade.tpo.demo.controllers.orders;
 
-import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Order;
-import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
-import com.uade.tpo.demo.exceptions.OrderDuplicateException;
 import com.uade.tpo.demo.exceptions.OrderNotFoundException;
-import com.uade.tpo.demo.service.CategoryService;
 import com.uade.tpo.demo.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("orders")
@@ -31,16 +26,12 @@ public class OrdersController {
     @GetMapping("/{OrderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long OrderId)
     throws OrderNotFoundException {
-        Optional<Order> result = orderService.getOrderById(OrderId);
-        if (result.isPresent())
-            return ResponseEntity.ok(result.get());
-
-        return ResponseEntity.noContent().build();
+        Order result = orderService.getOrderById(OrderId);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping
-    public ResponseEntity<Object> createOrder(@RequestBody OrdersRequest ordersRequest)
-            throws OrderDuplicateException {
+    public ResponseEntity<Object> createOrder(@RequestBody OrdersRequest ordersRequest) {
         Order result = orderService.createOrder(ordersRequest.getTotal(), ordersRequest.getStatus());
         return ResponseEntity.created(URI.create("/orders/" + result.getId())).body(result);
     }
@@ -52,12 +43,8 @@ public class OrdersController {
     }
 
     @DeleteMapping("/{OrderId}")
-    public ResponseEntity<Object> deleteOrder(@PathVariable Long OrderId) {
-        Optional<Order> result = orderService.getOrderById(OrderId);
-        if (result.isPresent()){
-            orderService.deleteOrder(OrderId);
-            return ResponseEntity.ok(result.get());
-        }
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Object> deleteOrder(@PathVariable Long OrderId) throws OrderNotFoundException{
+        Order result = orderService.deleteOrder(OrderId);
+        return ResponseEntity.ok(result);
     }
 }

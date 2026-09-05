@@ -1,28 +1,17 @@
 package com.uade.tpo.demo.service;
 
-import com.uade.tpo.demo.controllers.config.JwtService;
 import com.uade.tpo.demo.entity.Order;
 import com.uade.tpo.demo.entity.OrderStatus;
 import com.uade.tpo.demo.entity.User;
-import com.uade.tpo.demo.exceptions.OrderDuplicateException;
 import com.uade.tpo.demo.exceptions.OrderNotFoundException;
 import com.uade.tpo.demo.repository.OrderRepository;
 import com.uade.tpo.demo.repository.UserRepository;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.lang.NonNull;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,8 +32,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public Optional<Order> getOrderById(Long orderId) {
-        return orderRepository.findById(orderId);
+    public Order getOrderById(Long orderId) throws OrderNotFoundException{
+        Optional<Order> order = orderRepository.findById(orderId);
+        if (order.isPresent()) {
+            return order.get();
+        }
+        throw new OrderNotFoundException();
     }
 
 
@@ -71,7 +64,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public void deleteOrder(Long orderId) {
-        orderRepository.deleteById(orderId);
+    public Order deleteOrder(Long orderId) throws OrderNotFoundException{
+        Optional<Order> order = orderRepository.findById(orderId);
+        if (order.isPresent()) {
+            orderRepository.deleteById(orderId);
+            return order.get();
+        }
+        throw new OrderNotFoundException();
     }
 }
