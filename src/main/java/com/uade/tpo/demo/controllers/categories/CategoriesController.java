@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uade.tpo.demo.controllers.dtoResponses.CategoryResponse;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
 import com.uade.tpo.demo.service.CategoryService;
@@ -27,27 +28,36 @@ public class CategoriesController {
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<Page<Category>> getCategories(
+    public ResponseEntity<Page<CategoryResponse>> getCategories(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        if (page == null || size == null)
-            return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE)));
-        return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(page, size)));
+        Page<Category> categories = (page == null || size == null)
+                ? categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE))
+                : categoryService.getCategories(PageRequest.of(page, size));
+        return ResponseEntity.ok(categories.map(this::toResponse));
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long categoryId) {
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long categoryId) {
         Optional<Category> result = categoryService.getCategoryById(categoryId);
         if (result.isPresent())
-            return ResponseEntity.ok(result.get());
+            return ResponseEntity.ok(toResponse(result.get()));
 
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public ResponseEntity<Object> createCategory(@RequestBody CategoryRequest categoryRequest)
+    public ResponseEntity<CategoryResponse> createCategory(@RequestBody CategoryRequest categoryRequest)
             throws CategoryDuplicateException {
         Category result = categoryService.createCategory(categoryRequest.getDescription());
-        return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
+        return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(toResponse(result));
+    }
+
+    // Convierte una entidad Category a su DTO de respuesta
+    private CategoryResponse toResponse(Category category) {
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .description(category.getDescription())
+                .build();
     }
 }

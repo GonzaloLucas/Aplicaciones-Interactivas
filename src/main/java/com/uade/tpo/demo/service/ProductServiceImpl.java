@@ -1,12 +1,19 @@
 package com.uade.tpo.demo.service;
 
+import java.sql.Blob;
 import java.util.List;
+import javax.sql.rowset.serial.SerialBlob;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.uade.tpo.demo.controllers.product.ProductRequest;
 import com.uade.tpo.demo.entity.Category;
+import com.uade.tpo.demo.entity.Image;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.repository.CategoryRepository;
 import com.uade.tpo.demo.repository.ProductRepository;
@@ -28,13 +35,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable);
+    }
+
+    @Override
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado: " + id));
     }
 
     @Override
-    public Product createProduct(ProductRequest request) {
+    @Transactional // Asegura que se guarde el producto y todas sus imágenes en una sola
+                   // transacción
+    public Product createProduct(ProductRequest request, List<MultipartFile> files) throws Exception {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada: " + request.getCategoryId()));
 
@@ -43,19 +57,38 @@ public class ProductServiceImpl implements ProductService {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStock(request.getStock());
-        product.setImage(request.getImage());
         product.setCategory(category);
+
+        // Procesamiento de las imágenes y asignación de portada
+        if (files != null && !files.isEmpty()) {
+            for (int i = 0; i < files.size(); i++) {
+                MultipartFile file = files.get(i);
+                if (!file.isEmpty()) {
+                    byte[] bytes = file.getBytes();
+                    Blob blob = new SerialBlob(bytes);
+
+                    Image img = Image.builder()
+                            .image(blob)
+                            .esPortada(i == 0) // La primera imagen (índice 0) será la portada
+                            .build();
+
+                    product.addImage(img);
+                }
+            }
+        }
 
         return productRepository.save(product);
     }
 
     @Override
-    public Product updateProduct(Long id, ProductRequest request) {
+    @Transactional
+    public Product updateProduct(Long id, ProductRequest request, List<MultipartFile> files) throws Exception {
         Product product = getProductById(id);
 
         if (request.getCategoryId() != null) {
             Category category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada: " + request.getCategoryId()));
+                    .orElseThrow(
+                            () -> new EntityNotFoundException("Categoría no encontrada: " + request.getCategoryId()));
             product.setCategory(category);
         }
 
@@ -63,7 +96,25 @@ public class ProductServiceImpl implements ProductService {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStock(request.getStock());
-        product.setImage(request.getImage());
+
+        // Procesar nuevas imágenes si se enviaron
+        if (files != null && !files.isEmpty()) {
+            boolean tieneImagenes = !product.getImages().isEmpty();
+            for (int i = 0; i < files.size(); i++) {
+                MultipartFile file = files.get(i);
+                if (!file.isEmpty()) {
+                    byte[] bytes = file.getBytes();
+                    Blob blob = new SerialBlob(bytes);
+
+                    Image img = Image.builder()
+                            .image(blob)
+                            .esPortada(!tieneImagenes && i == 0)
+                            .build();
+
+                    product.addImage(img);
+                }
+            }
+        }
 
         return productRepository.save(product);
     }

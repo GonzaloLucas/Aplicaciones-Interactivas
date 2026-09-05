@@ -34,8 +34,8 @@ public class Image {
     @Column(name = "image")
     private Blob image;
 
-    @Column
-    private boolean es_portada;
+    @Column(name = "es_portada")
+    private boolean esPortada;
 
     // Muchas imágenes pertenecen a un Producto
     @ManyToOne(fetch = FetchType.LAZY)
