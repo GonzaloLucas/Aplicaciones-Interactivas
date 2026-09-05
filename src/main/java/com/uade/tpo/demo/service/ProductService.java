@@ -16,7 +16,7 @@ public interface ProductService {
 
     Product updateProduct(Long id, ProductRequest request);
 
-    void deleteProduct(Long id);
+    Product deleteProduct(Long id);
 
     Product applyDiscount(Long productId, Double discountPercentage);
 }
