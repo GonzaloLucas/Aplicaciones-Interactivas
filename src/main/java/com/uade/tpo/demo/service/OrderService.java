@@ -11,4 +11,5 @@ public interface OrderService {
     Order getOrderById(Long orderId);
     Order updateOrder(Long orderId, OrderStatus status, Double total);
     Order deleteOrder(Long orderId);
+    Order checkout();
 }

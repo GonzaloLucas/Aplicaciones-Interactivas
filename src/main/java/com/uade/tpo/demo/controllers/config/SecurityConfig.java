@@ -40,6 +40,10 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.PATCH, "/products/**").hasRole("ADMIN")
                                                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("ADMIN")
                                                 .requestMatchers(HttpMethod.PUT,"/products/*/discount").hasRole("ADMIN")
+                                                .requestMatchers(HttpMethod.GET,  "/orders/**").hasRole("ADMIN")
+                                                .requestMatchers(HttpMethod.PUT, "/orders/**").hasRole("ADMIN")
+                                                .requestMatchers(HttpMethod.DELETE, "/orders/**").hasRole("ADMIN")
+                                                .requestMatchers(HttpMethod.POST,"/orders/checkout").authenticated()
 
                                                 .anyRequest()
                                                 .authenticated())
