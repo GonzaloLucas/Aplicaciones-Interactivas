@@ -14,6 +14,17 @@ import lombok.Data;
 @Data
 @Entity
 public class Product {
+
+    public Product() {
+    }
+    public Product(String name, String description, Double price, Integer stock, String image, Category category) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+        this.image = image;
+        this.category = category;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
