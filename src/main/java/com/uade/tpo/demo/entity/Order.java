@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Order {
 
-    public Order(Double total, User user) {
+    public Order(Double total, User user, OrderStatus status) {
         this.total = total;
         this.user = user;
-        this.status = OrderStatus.PENDING_PAYMENT;
+        this.status = status;
         this.createdAt = java.time.LocalDateTime.now();
     }
     @Id
@@ -39,7 +39,7 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private List<OrderDetail> orderDetails;
 
 }
