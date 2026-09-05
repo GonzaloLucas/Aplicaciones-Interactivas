@@ -3,6 +3,8 @@ package com.uade.tpo.demo.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.uade.tpo.demo.controllers.product.ProductRequest;
@@ -12,6 +14,7 @@ import com.uade.tpo.demo.repository.CategoryRepository;
 import com.uade.tpo.demo.repository.ProductRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -22,18 +25,18 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    @Transactional
+    public Page<Product> getAllProducts(PageRequest pageable) {
+        return productRepository.findAll(pageable);
     }
 
-    @Override
+    @Transactional
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado: " + id));
     }
 
-    @Override
+    @Transactional
     public Product createProduct(ProductRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada: " + request.getCategoryId()));
@@ -49,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
-    @Override
+    @Transactional
     public Product updateProduct(Long id, ProductRequest request) {
         Product product = getProductById(id);
 
@@ -68,13 +71,13 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
-    @Override
+    @Transactional
     public void deleteProduct(Long id) {
         Product product = getProductById(id);
         productRepository.delete(product);
     }
 
-    @Override
+    @Transactional
     public Product applyDiscount(Long productId, Double discountPercentage) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
