@@ -1,19 +1,25 @@
 package com.uade.tpo.demo.service;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uade.tpo.demo.controllers.product.ProductRequest;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Product;
+import com.uade.tpo.demo.exceptions.CategoryNotFoundException;
+import com.uade.tpo.demo.exceptions.ProductNotFoundException;
 import com.uade.tpo.demo.repository.CategoryRepository;
 import com.uade.tpo.demo.repository.ProductRepository;
 
-import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
@@ -22,71 +28,86 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    @Transactional
+    public Page<Product> getAllProducts(PageRequest pageable) {
+        return productRepository.findAll(pageable);
     }
 
-    @Override
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado: " + id));
+    @Transactional
+    public Product getProductById(Long id) throws ProductNotFoundException {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            return product.get();
+        }
+        throw new ProductNotFoundException();
     }
 
-    @Override
+    @Transactional
     public Product createProduct(ProductRequest request) {
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada: " + request.getCategoryId()));
-
-        Product product = new Product();
-        product.setName(request.getName());
-        product.setDescription(request.getDescription());
-        product.setPrice(request.getPrice());
-        product.setStock(request.getStock());
-        product.setImage(request.getImage());
-        product.setCategory(category);
-
-        return productRepository.save(product);
-    }
-
-    @Override
-    public Product updateProduct(Long id, ProductRequest request) {
-        Product product = getProductById(id);
-
-        if (request.getCategoryId() != null) {
-            Category category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada: " + request.getCategoryId()));
-            product.setCategory(category);
+        Optional<Category> category = categoryRepository.findById(request.getCategoryId());
+        if (category.isPresent()) {
+            return productRepository.save(new Product(
+                    request.getName(),
+                    request.getDescription(),
+                    request.getPrice(),
+                    request.getStock(),
+                    request.getImage(),
+                    category.get()
+            ));
         }
-
-        product.setName(request.getName());
-        product.setDescription(request.getDescription());
-        product.setPrice(request.getPrice());
-        product.setStock(request.getStock());
-        product.setImage(request.getImage());
-
-        return productRepository.save(product);
+        throw new CategoryNotFoundException();
     }
 
-    @Override
-    public void deleteProduct(Long id) {
-        Product product = getProductById(id);
-        productRepository.delete(product);
-    }
+    @Transactional
+    public Product updateProduct(Long id, ProductRequest request) throws ProductNotFoundException {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            Product productToUpdate = product.get();
 
-    @Override
-    public Product applyDiscount(Long productId, Double discountPercentage) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+            if (request.getCategoryId() != null) {
+                Optional<Category> category = categoryRepository.findById(request.getCategoryId());
+                if (category.isPresent()) {
+                    productToUpdate.setCategory(category.get());
+                } else {
+                    throw new CategoryNotFoundException();
+                }
+            }
 
-        if (discountPercentage == null ||
-            discountPercentage < 0 ||
-            discountPercentage > 100) {
-            throw new IllegalArgumentException("El descuento debe estar entre 0 y 100");
+            productToUpdate.setName(request.getName());
+            productToUpdate.setDescription(request.getDescription());
+            productToUpdate.setPrice(request.getPrice());
+            productToUpdate.setStock(request.getStock());
+            productToUpdate.setImage(request.getImage());
+
+            return productRepository.save(productToUpdate);
         }
+        throw new ProductNotFoundException();
+    }
 
-        product.setDiscountPercentage(discountPercentage);
+    @Transactional
+    public Product deleteProduct(Long id) throws ProductNotFoundException {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            productRepository.deleteById(id);
+            return product.get();
+        }
+        throw new ProductNotFoundException();
+    }
 
-        return productRepository.save(product);
+    @Transactional
+    public Product applyDiscount(Long productId, Double discountPercentage) throws ProductNotFoundException {
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isPresent()) {
+            if (discountPercentage == null ||
+                discountPercentage < 0 ||
+                discountPercentage > 100) {
+                throw new IllegalArgumentException("El descuento debe estar entre 0 y 100");
+            }
+
+            Product productToUpdate = product.get();
+            productToUpdate.setDiscountPercentage(discountPercentage);
+            return productRepository.save(productToUpdate);
+        }
+        throw new ProductNotFoundException();
     }
 }

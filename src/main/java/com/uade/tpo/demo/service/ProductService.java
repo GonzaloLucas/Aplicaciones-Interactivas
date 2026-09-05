@@ -4,9 +4,11 @@ import java.util.List;
 
 import com.uade.tpo.demo.controllers.product.ProductRequest;
 import com.uade.tpo.demo.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 public interface ProductService {
-    List<Product> getAllProducts();
+    Page<Product> getAllProducts(PageRequest pageRequest);
 
     Product getProductById(Long id);
 
@@ -14,7 +16,7 @@ public interface ProductService {
 
     Product updateProduct(Long id, ProductRequest request);
 
-    void deleteProduct(Long id);
+    Product deleteProduct(Long id);
 
     Product applyDiscount(Long productId, Double discountPercentage);
 }
