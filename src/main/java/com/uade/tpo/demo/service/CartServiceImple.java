@@ -104,11 +104,11 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
-    public void updateItemQuantity(Long userId, Long productId, int quantity) {
+    public CartItem updateItemQuantity(Long userId, Long productId, int quantity) {
         if (quantity <= 0) {
             // Actualizar a 0 (o menos) equivale a sacar el producto del carrito
             removeItem(userId, productId);
-            return;
+            return null;
         }
 
         CartItem item = cartItemRepository.findByCart_User_IdAndProduct_Id(userId, productId)
@@ -124,6 +124,7 @@ public class CartServiceImple implements CartService {
         item.setQuantity(quantity);
         cartItemRepository.save(item);
         touchCart(userId);
+        return item;
     }
 
     @Override

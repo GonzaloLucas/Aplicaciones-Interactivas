@@ -9,22 +9,22 @@ import com.uade.tpo.demo.entity.CartItem;
 
 public interface CartService {
 
-    public Cart getOrCreateCart(Long userId);
+    Cart getOrCreateCart(Long userId);
 
-    public Page<CartItem> getCartItems(Long userId, PageRequest pageRequest);
+    Page<CartItem> getCartItems(Long userId, PageRequest pageRequest);
 
-    public CartItem addItem(Long userId, Long productId, int quantity);
+    CartItem addItem(Long userId, Long productId, int quantity);
     
-    public void removeItem(Long userId, Long productId);
+    void removeItem(Long userId, Long productId);
 
-    public void updateItemQuantity(Long userId, Long productId, int quantity);
+    CartItem updateItemQuantity(Long userId, Long productId, int quantity);
 
-    public void cleanCart(Long userId);
+    void cleanCart(Long userId);
 
     // operaciones de logica de negoico extra
 
-    public boolean validateCart(Long userId);
+    boolean validateCart(Long userId);
 
-    public double calculateTotal(Long userId);
+    double calculateTotal(Long userId);
 
 }
