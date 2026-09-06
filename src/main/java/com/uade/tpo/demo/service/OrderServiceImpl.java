@@ -127,7 +127,7 @@ public class OrderServiceImpl implements OrderService {
             productRepository.save(product);
         }
 
-        Order order = new Order(total, user, OrderStatus.PAID);
+        Order order = new Order(total, user, OrderStatus.PENDING_PAYMENT);
         order.setOrderDetails(orderDetails);
 
         for (OrderDetail detail : orderDetails) {
@@ -140,4 +140,23 @@ public class OrderServiceImpl implements OrderService {
 
         return savedOrder;
     }
+
+    @Transactional
+    public Order payOrder(Long orderId) throws OrderNotFoundException{
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User user = userRepository.findUserByEmail(email);
+
+        Optional<Order> order = orderRepository.findByIdAndUserId(orderId, user.getId());
+
+        if (order.isPresent()) {
+            Order orderToUpdate = order.get();
+            orderToUpdate.setStatus(OrderStatus.PAID);
+            return orderRepository.save(orderToUpdate);
+        }
+        throw new OrderNotFoundException();
+    }
+
+
 }
