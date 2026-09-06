@@ -1,26 +1,32 @@
 
 package com.uade.tpo.demo.service;
 
+import com.uade.tpo.demo.entity.Cart;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.uade.tpo.demo.entity.CartItem;
 
 public interface CartService {
-    public Page<CartItem> getCartItems(Long userId, PageRequest pageRequest);
 
-    public CartItem addItem(Long userId, Long productId, int quantity);
+    Cart getOrCreateCart(Long userId);
+
+    Page<CartItem> getCartItems(Long userId, PageRequest pageRequest);
+
+    CartItem getCartItem(Long userId, Long productId);
+
+    CartItem addItem(Long userId, Long productId, int quantity);
     
-    public void removeItem(Long userId, Long productId);
+    void removeItem(Long userId, Long productId);
 
-    public void updateItemQuantity(Long userId, Long productId, int quantity);
+    CartItem updateItemQuantity(Long userId, Long productId, int quantity);
 
-    public void cleanCart(Long userId);
+    void cleanCart(Long userId);
 
     // operaciones de logica de negoico extra
 
-    public boolean validateCart(Long userId);
+    boolean validateCart(Long userId);
 
-    public double calculateTotal(Long userId);
+    double calculateTotal(Long userId);
 
 }

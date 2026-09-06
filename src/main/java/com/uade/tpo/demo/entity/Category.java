@@ -2,6 +2,8 @@ package com.uade.tpo.demo.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,8 +19,8 @@ public class Category {
     public Category() {
     }
 
-    public Category( String description) {
-        
+    public Category(String name, String description) {
+        this.name = name;
         this.description = description;
     }
 
@@ -26,12 +28,9 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
     @Column
     private String description;
-
-    @OneToMany(mappedBy = "category")
-    private List<Product> products;
 }

@@ -39,7 +39,7 @@ public class CartServiceImple implements CartService {
      * Devuelve el carrito del usuario. Si todavia no tiene uno (primera compra),
      * lo crea.
      */
-    private Cart getOrCreateCart(Long userId) {
+    public Cart getOrCreateCart(Long userId) {
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     Cart cart = new Cart();
@@ -51,6 +51,14 @@ public class CartServiceImple implements CartService {
                     cart.setItems(new ArrayList<>());
                     return cartRepository.save(cart);
                 });
+    }
+
+    @Override
+    public CartItem getCartItem(Long userId, Long productId) {
+        CartItem item = cartItemRepository.findByCart_User_IdAndProduct_Id(userId, productId)
+                .orElseThrow(() -> new CartItemNotFoundException(
+                        "El producto " + productId + " no esta en el carrito del usuario " + userId));
+        return item;
     }
 
     @Override
@@ -104,11 +112,11 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
-    public void updateItemQuantity(Long userId, Long productId, int quantity) {
+    public CartItem updateItemQuantity(Long userId, Long productId, int quantity) {
         if (quantity <= 0) {
             // Actualizar a 0 (o menos) equivale a sacar el producto del carrito
             removeItem(userId, productId);
-            return;
+            return null;
         }
 
         CartItem item = cartItemRepository.findByCart_User_IdAndProduct_Id(userId, productId)
@@ -124,6 +132,7 @@ public class CartServiceImple implements CartService {
         item.setQuantity(quantity);
         cartItemRepository.save(item);
         touchCart(userId);
+        return item;
     }
 
     @Override

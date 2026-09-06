@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.uade.tpo.demo.controllers.product.ProductRequest;
 import com.uade.tpo.demo.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 public interface ProductService {
 
@@ -19,5 +21,7 @@ public interface ProductService {
 
     Product updateProduct(Long id, ProductRequest request, List<MultipartFile> files) throws Exception;
 
-    void deleteProduct(Long id);
+    Product deleteProduct(Long id);
+
+    Product applyDiscount(Long productId, Double discountPercentage);
 }

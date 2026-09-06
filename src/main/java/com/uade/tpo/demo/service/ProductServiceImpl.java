@@ -2,6 +2,8 @@ package com.uade.tpo.demo.service;
 
 import java.sql.Blob;
 import java.util.List;
+import java.util.Optional;
+
 import javax.sql.rowset.serial.SerialBlob;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,16 @@ import com.uade.tpo.demo.controllers.product.ProductRequest;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Image;
 import com.uade.tpo.demo.entity.Product;
+import com.uade.tpo.demo.exceptions.CategoryNotFoundException;
+import com.uade.tpo.demo.exceptions.ProductNotFoundException;
 import com.uade.tpo.demo.repository.CategoryRepository;
 import com.uade.tpo.demo.repository.ProductRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
@@ -115,9 +121,30 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
-    @Override
-    public void deleteProduct(Long id) {
-        Product product = getProductById(id);
-        productRepository.delete(product);
+    @Transactional
+    public Product deleteProduct(Long id) throws ProductNotFoundException {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            productRepository.deleteById(id);
+            return product.get();
+        }
+        throw new ProductNotFoundException();
+    }
+
+    @Transactional
+    public Product applyDiscount(Long productId, Double discountPercentage) throws ProductNotFoundException {
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isPresent()) {
+            if (discountPercentage == null ||
+                discountPercentage < 0 ||
+                discountPercentage > 100) {
+                throw new IllegalArgumentException("El descuento debe estar entre 0 y 100");
+            }
+
+            Product productToUpdate = product.get();
+            productToUpdate.setDiscountPercentage(discountPercentage);
+            return productRepository.save(productToUpdate);
+        }
+        throw new ProductNotFoundException();
     }
 }

@@ -9,13 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,7 +60,6 @@ public class ProductController {
     // ==================== Endpoints de administración ====================
 
     @PostMapping(consumes = { "multipart/form-data" })
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductDetailResponse> createProduct(
             @ModelAttribute ProductRequest request,
             @RequestParam(value = "files", required = false) List<MultipartFile> files) throws Exception {
@@ -70,7 +69,6 @@ public class ProductController {
     }
 
     @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductDetailResponse> updateProduct(
             @PathVariable Long id,
             @ModelAttribute ProductRequest request,
@@ -79,10 +77,13 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<ProductDetailResponse> deleteProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(toDetailResponse(productService.deleteProduct(id)));
+    }
+
+    @PutMapping("/{id}/discount")
+    public ResponseEntity<ProductDetailResponse> applyDiscount(@PathVariable Long id, @RequestBody DiscountRequest request) {
+        return ResponseEntity.ok(toDetailResponse(productService.applyDiscount(id, request.getDiscountPercentage())));
     }
 
     // ==================== Endpoints de imágenes (admin) ====================
@@ -92,7 +93,6 @@ public class ProductController {
      * POST /products/{id}/images
      */
     @PostMapping(value = "/{id}/images", consumes = { "multipart/form-data" })
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> addImagesToProduct(
             @PathVariable Long id,
             @RequestParam("files") List<MultipartFile> files) throws Exception {
@@ -106,7 +106,6 @@ public class ProductController {
      * DELETE /products/{id}/images/{imageId}
      */
     @DeleteMapping("/{id}/images/{imageId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProductImage(
             @PathVariable Long id,
             @PathVariable Long imageId) {
@@ -142,6 +141,8 @@ public class ProductController {
                 .id(product.getId())
                 .name(product.getName())
                 .price(product.getPrice())
+                .discountPercentage(product.getDiscountPercentage())
+                .finalPrice(product.getFinalPrice())
                 .portadaBase64(portadaBase64)
                 .build();
     }
@@ -156,6 +157,7 @@ public class ProductController {
         if (product.getCategory() != null) {
             categoryResponse = CategoryResponse.builder()
                     .id(product.getCategory().getId())
+                    .name(product.getCategory().getName())
                     .description(product.getCategory().getDescription())
                     .build();
         }
@@ -186,6 +188,8 @@ public class ProductController {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .stock(product.getStock())
+                .discountPercentage(product.getDiscountPercentage())
+                .finalPrice(product.getFinalPrice())
                 .category(categoryResponse)
                 .images(imageResponses)
                 .build();

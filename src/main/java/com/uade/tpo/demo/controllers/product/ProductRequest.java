@@ -1,5 +1,7 @@
 package com.uade.tpo.demo.controllers.product;
 
+import com.uade.tpo.demo.entity.Image;
+
 import lombok.Data;
 
 @Data

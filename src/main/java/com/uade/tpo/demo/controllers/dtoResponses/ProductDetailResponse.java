@@ -13,6 +13,8 @@ public class ProductDetailResponse {
     private String description;
     private Double price;
     private Integer stock;
+    private Double discountPercentage;
+    private Double finalPrice;
     private CategoryResponse category;
     private List<ImageResponse> images;
 }

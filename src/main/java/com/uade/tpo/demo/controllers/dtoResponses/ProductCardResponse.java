@@ -8,6 +8,8 @@ import lombok.Data;
 public class ProductCardResponse {
     private Long id;
     private String name;
+    private Double discountPercentage;
     private Double price;
+    private Double finalPrice;
     private String portadaBase64;
 }

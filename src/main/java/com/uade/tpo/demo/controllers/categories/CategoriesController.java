@@ -43,13 +43,13 @@ public class CategoriesController {
         if (result.isPresent())
             return ResponseEntity.ok(toResponse(result.get()));
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@RequestBody CategoryRequest categoryRequest)
             throws CategoryDuplicateException {
-        Category result = categoryService.createCategory(categoryRequest.getDescription());
+        Category result = categoryService.createCategory(categoryRequest.getName(), categoryRequest.getDescription());
         return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(toResponse(result));
     }
 
@@ -57,6 +57,7 @@ public class CategoriesController {
     private CategoryResponse toResponse(Category category) {
         return CategoryResponse.builder()
                 .id(category.getId())
+                .name(category.getName())
                 .description(category.getDescription())
                 .build();
     }

@@ -16,6 +16,8 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @Entity
 @Table(name = "products")
@@ -43,11 +45,25 @@ public class Product {
     // Relación 1 a N con las imágenes
     @ToString.Exclude // Evita recursión infinita en el toString de Lombok
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore 
     private List<Image> images = new ArrayList<>();
 
     // Método helper para vincular ambos lados
     public void addImage(Image image) {
         images.add(image);
         image.setProduct(this);
+    }
+
+    @Column
+    private Double discountPercentage;
+
+    public Double getFinalPrice() {
+        if (discountPercentage == null || discountPercentage <= 0) {
+            return price;
+        }
+
+        Double discount = price * discountPercentage / 100;
+
+        return price - discount;
     }
 }
