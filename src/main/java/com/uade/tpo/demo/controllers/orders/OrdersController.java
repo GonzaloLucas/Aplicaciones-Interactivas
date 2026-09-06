@@ -56,4 +56,10 @@ public class OrdersController {
         Order result = orderService.checkout();
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
+
+    @PostMapping("/pay/{OrderId}")
+    public ResponseEntity<Order> payOrder(@PathVariable Long OrderId) throws OrderNotFoundException {
+        Order result = orderService.payOrder(OrderId);
+        return ResponseEntity.ok(result);
+    }
 }
