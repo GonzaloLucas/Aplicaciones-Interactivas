@@ -39,7 +39,7 @@ public class CartServiceImple implements CartService {
      * Devuelve el carrito del usuario. Si todavia no tiene uno (primera compra),
      * lo crea.
      */
-    private Cart getOrCreateCart(Long userId) {
+    public Cart getOrCreateCart(Long userId) {
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     Cart cart = new Cart();
