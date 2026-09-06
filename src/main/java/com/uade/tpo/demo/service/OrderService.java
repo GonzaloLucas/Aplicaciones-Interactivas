@@ -14,4 +14,5 @@ public interface OrderService {
     Order updateOrder(Long orderId, OrderStatus status, Double total);
     Order deleteOrder(Long orderId);
     Order checkout() throws EmptyCartException, OutOfStockException;
+    Order payOrder(Long orderId);
 }
