@@ -28,21 +28,8 @@ public class ImageServiceImpl implements ImageService {
     private ProductRepository productRepository;
 
     @Override
-    public Image create(Image image) {
-        return imageRepository.save(image);
-    }
-
-    @Override
     public Image viewById(long id) {
         return imageRepository.findById(id).get();
-    }
-
-    @Override
-    public List<Image> getImagesByProductId(Long productId) {
-        // Verificamos que el producto exista antes de buscar sus imágenes
-        productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado: " + productId));
-        return imageRepository.findByProductId(productId);
     }
 
     @Override

@@ -29,10 +29,6 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
 
     @Override
     public Page<Product> getAllProducts(Pageable pageable) {

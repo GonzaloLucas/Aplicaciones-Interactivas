@@ -11,11 +11,8 @@ import com.uade.tpo.demo.entity.Image;
 
 @Service
 public interface ImageService {
-    public Image create(Image image);
 
     public Image viewById(long id);
-
-    public List<Image> getImagesByProductId(Long productId);
 
     public void addImagesToProduct(Long productId, List<MultipartFile> files) throws Exception;
 

@@ -10,7 +10,6 @@ import com.uade.tpo.demo.controllers.product.ProductRequest;
 import com.uade.tpo.demo.entity.Product;
 
 public interface ProductService {
-    List<Product> getAllProducts();
 
     Page<Product> getAllProducts(Pageable pageable);
 
