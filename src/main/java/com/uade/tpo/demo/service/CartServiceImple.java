@@ -54,6 +54,14 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
+    public CartItem getCartItem(Long userId, Long productId) {
+        CartItem item = cartItemRepository.findByCart_User_IdAndProduct_Id(userId, productId)
+                .orElseThrow(() -> new CartItemNotFoundException(
+                        "El producto " + productId + " no esta en el carrito del usuario " + userId));
+        return item;
+    }
+
+    @Override
     public Page<CartItem> getCartItems(Long userId, PageRequest pageRequest) {
         return cartItemRepository.findByCart_User_Id(userId, pageRequest);
     }

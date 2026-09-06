@@ -13,6 +13,8 @@ public interface CartService {
 
     Page<CartItem> getCartItems(Long userId, PageRequest pageRequest);
 
+    CartItem getCartItem(Long userId, Long productId);
+
     CartItem addItem(Long userId, Long productId, int quantity);
     
     void removeItem(Long userId, Long productId);

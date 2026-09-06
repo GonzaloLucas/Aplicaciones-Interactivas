@@ -51,6 +51,11 @@ public class CartController {
         return ResponseEntity.ok(cartService.getCartItems(user.getId(), pageRequest));
     }
 
+    @GetMapping("/items/{productId}")
+    public ResponseEntity<CartItem> getCartItem(@AuthenticationPrincipal User user, @PathVariable Long productId) {
+        return ResponseEntity.ok(cartService.getCartItem(user.getId(), productId));
+    }
+
     @GetMapping("/total")
     public ResponseEntity<Double> getCartTotal(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(cartService.calculateTotal(user.getId()));
