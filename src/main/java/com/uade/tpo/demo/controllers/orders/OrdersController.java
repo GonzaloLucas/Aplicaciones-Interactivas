@@ -1,7 +1,9 @@
 package com.uade.tpo.demo.controllers.orders;
 
 import com.uade.tpo.demo.entity.Order;
+import com.uade.tpo.demo.exceptions.EmptyCartException;
 import com.uade.tpo.demo.exceptions.OrderNotFoundException;
+import com.uade.tpo.demo.exceptions.OutOfStockException;
 import com.uade.tpo.demo.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,7 +52,7 @@ public class OrdersController {
     }
 
     @PostMapping("/checkout")
-    public ResponseEntity<Order> checkout() {
+    public ResponseEntity<Order> checkout() throws EmptyCartException, OutOfStockException {
         Order result = orderService.checkout();
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
