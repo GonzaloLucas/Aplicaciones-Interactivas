@@ -54,11 +54,13 @@ public class SecurityConfig {
                         // - Listar todas las órdenes: Solo ADMIN
                         // - Consultar orden por ID: ADMIN
                         // - Modificar estado o eliminar órdenes: Solo ADMIN
+                        // - Crear Checkout: Usuarios autenticados (USER o ADMIN)
                         .requestMatchers(HttpMethod.POST, "/orders/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/orders").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/orders/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/orders/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/orders/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/orders/checkout").hasAnyRole("USER", "ADMIN")
 
                         // Rutas de administración general
                         .requestMatchers("/admin/**").hasRole("ADMIN")

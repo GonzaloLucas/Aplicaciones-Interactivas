@@ -34,6 +34,10 @@ public class Cart {
     @Column
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @OneToMany(
+        mappedBy = "cart", 
+        cascade = CascadeType.ALL, 
+        orphanRemoval = true // Permite limpiar el carrito en db
+    )
     private List<CartItem> items;
 }
