@@ -1,5 +1,6 @@
 package com.uade.tpo.demo.controllers.cart;
 
+import com.uade.tpo.demo.entity.Cart;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,11 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
+    public ResponseEntity<Cart> getCart(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(cartService.getOrCreateCart(user.getId()));
+    }
+
+    @GetMapping("/items")
     public ResponseEntity<Page<CartItem>> getCartItems(
             @AuthenticationPrincipal User user,
             @RequestParam(required = false) Integer page,

@@ -1,11 +1,14 @@
 package com.uade.tpo.demo.controllers.orders;
 
 import com.uade.tpo.demo.entity.Order;
+import com.uade.tpo.demo.exceptions.EmptyCartException;
 import com.uade.tpo.demo.exceptions.OrderNotFoundException;
+import com.uade.tpo.demo.exceptions.OutOfStockException;
 import com.uade.tpo.demo.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,5 +49,11 @@ public class OrdersController {
     public ResponseEntity<Object> deleteOrder(@PathVariable Long OrderId) throws OrderNotFoundException{
         Order result = orderService.deleteOrder(OrderId);
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<Order> checkout() throws EmptyCartException, OutOfStockException {
+        Order result = orderService.checkout();
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }
