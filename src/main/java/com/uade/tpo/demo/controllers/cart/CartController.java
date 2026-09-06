@@ -1,6 +1,9 @@
 package com.uade.tpo.demo.controllers.cart;
 
 import com.uade.tpo.demo.entity.Cart;
+import com.uade.tpo.demo.entity.Product;
+import com.uade.tpo.demo.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -22,11 +25,14 @@ import com.uade.tpo.demo.service.CartService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
 public class CartController {
 
+    @Autowired
     private final CartService cartService;
 
     @GetMapping
@@ -43,6 +49,11 @@ public class CartController {
                 ? PageRequest.of(0, Integer.MAX_VALUE)
                 : PageRequest.of(page, size);
         return ResponseEntity.ok(cartService.getCartItems(user.getId(), pageRequest));
+    }
+
+    @GetMapping("/items/{productId}")
+    public ResponseEntity<CartItem> getCartItem(@AuthenticationPrincipal User user, @PathVariable Long productId) {
+        return ResponseEntity.ok(cartService.getCartItem(user.getId(), productId));
     }
 
     @GetMapping("/total")
@@ -64,11 +75,15 @@ public class CartController {
     }
 
     @PutMapping("/items/{productId}")
-    public ResponseEntity<Void> updateItemQuantity(
+    public ResponseEntity<CartItem> updateItemQuantity(
             @AuthenticationPrincipal User user,
             @PathVariable Long productId,
-            @RequestBody CartItemRequest request) {
-        cartService.updateItemQuantity(user.getId(), productId, request.getQuantity());
+            @RequestBody CartItemUpdateRequest request) {
+
+        CartItem item = cartService.updateItemQuantity(user.getId(), productId, request.getQuantity());
+        if (item != null) {
+            return ResponseEntity.ok(item);
+        }
         return ResponseEntity.noContent().build();
     }
 
