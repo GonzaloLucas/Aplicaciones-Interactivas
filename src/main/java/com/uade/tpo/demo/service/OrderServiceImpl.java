@@ -89,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional 
-    public Order checkout() {
+    public Order checkout() throws EmptyCartException, OutOfStockException{
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         User user = userRepository.findUserByEmail(email);
