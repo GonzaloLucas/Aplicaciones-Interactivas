@@ -69,6 +69,19 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    @Transactional
+    public Image replaceImage(Long imageId, MultipartFile file) throws Exception {
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new ImageNotFoundException("Imagen no encontrada: " + imageId));
+
+        byte[] bytes = file.getBytes();
+        Blob blob = new SerialBlob(bytes);
+        image.setImage(blob);
+
+        return imageRepository.save(image);
+    }
+
+    @Override
     public Page<Image> getPortadaImages(Pageable pageable) {
         return imageRepository.findByEsPortadaTrue(pageable);
     }

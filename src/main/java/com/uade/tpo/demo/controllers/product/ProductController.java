@@ -113,6 +113,19 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Reemplaza una imagen específica de un producto.
+     * PUT /products/{id}/images/{imageId}
+     */
+    @PutMapping(value = "/{id}/images/{imageId}", consumes = { "multipart/form-data" })
+    public ResponseEntity<String> replaceProductImage(
+            @PathVariable Long id,
+            @PathVariable Long imageId,
+            @RequestParam("file") MultipartFile file) throws Exception {
+        imageService.replaceImage(imageId, file);
+        return ResponseEntity.ok("Imagen " + imageId + " del producto " + id + " reemplazada correctamente");
+    }
+
     // ==================== Helpers de conversión ====================
 
     /**

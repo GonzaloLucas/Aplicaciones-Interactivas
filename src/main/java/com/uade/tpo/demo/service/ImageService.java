@@ -18,5 +18,7 @@ public interface ImageService {
 
     public void deleteImage(Long imageId);
 
+    public Image replaceImage(Long imageId, MultipartFile file) throws Exception;
+
     public Page<Image> getPortadaImages(Pageable pageable);
 }
