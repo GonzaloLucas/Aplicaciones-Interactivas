@@ -22,7 +22,6 @@ import com.uade.tpo.demo.exceptions.ProductNotFoundException;
 import com.uade.tpo.demo.repository.CategoryRepository;
 import com.uade.tpo.demo.repository.ProductRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -44,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado: " + id));
+                .orElseThrow(() -> new ProductNotFoundException());
     }
 
     @Override
@@ -52,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
                    // transacción
     public Product createProduct(ProductRequest request, List<MultipartFile> files) throws Exception {
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada: " + request.getCategoryId()));
+                .orElseThrow(() -> new CategoryNotFoundException());
 
         Product product = new Product();
         product.setName(request.getName());
@@ -89,8 +88,7 @@ public class ProductServiceImpl implements ProductService {
 
         if (request.getCategoryId() != null) {
             Category category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(
-                            () -> new EntityNotFoundException("Categoría no encontrada: " + request.getCategoryId()));
+                    .orElseThrow(() -> new CategoryNotFoundException());
             product.setCategory(category);
         }
 

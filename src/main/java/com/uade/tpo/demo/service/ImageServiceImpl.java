@@ -14,10 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.uade.tpo.demo.entity.Image;
 import com.uade.tpo.demo.entity.Product;
+import com.uade.tpo.demo.exceptions.ImageNotFoundException;
+import com.uade.tpo.demo.exceptions.ProductNotFoundException;
 import com.uade.tpo.demo.repository.ImageRepository;
 import com.uade.tpo.demo.repository.ProductRepository;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -29,14 +29,15 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image viewById(long id) {
-        return imageRepository.findById(id).get();
+        return imageRepository.findById(id)
+                .orElseThrow(() -> new ImageNotFoundException("Imagen no encontrada: " + id));
     }
 
     @Override
     @Transactional
     public void addImagesToProduct(Long productId, List<MultipartFile> files) throws Exception {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado: " + productId));
+                .orElseThrow(() -> new ProductNotFoundException());
 
         // Si el producto no tiene imágenes, la primera subida será la portada
         boolean tieneImagenes = !product.getImages().isEmpty();
@@ -63,7 +64,7 @@ public class ImageServiceImpl implements ImageService {
     @Transactional
     public void deleteImage(Long imageId) {
         Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new EntityNotFoundException("Imagen no encontrada: " + imageId));
+                .orElseThrow(() -> new ImageNotFoundException("Imagen no encontrada: " + imageId));
         imageRepository.delete(image);
     }
 

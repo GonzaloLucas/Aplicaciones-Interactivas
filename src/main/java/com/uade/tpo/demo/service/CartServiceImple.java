@@ -13,12 +13,12 @@ import com.uade.tpo.demo.entity.CartItem;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.exceptions.CartItemNotFoundException;
 import com.uade.tpo.demo.exceptions.OutOfStockException;
+import com.uade.tpo.demo.exceptions.ProductNotFoundException;
+import com.uade.tpo.demo.exceptions.UserNotFoundException;
 import com.uade.tpo.demo.repository.CartItemRepository;
 import com.uade.tpo.demo.repository.CartRepository;
 import com.uade.tpo.demo.repository.ProductRepository;
 import com.uade.tpo.demo.repository.UserRepository;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class CartServiceImple implements CartService {
@@ -44,7 +44,7 @@ public class CartServiceImple implements CartService {
                 .orElseGet(() -> {
                     Cart cart = new Cart();
                     cart.setUser(userRepository.findById(userId)
-                            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: " + userId)));
+                            .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado: " + userId)));
                     cart.setStatus("ACTIVE");
                     cart.setCreatedAt(LocalDateTime.now());
                     cart.setUpdatedAt(LocalDateTime.now());
@@ -74,7 +74,7 @@ public class CartServiceImple implements CartService {
 
         Cart cart = getOrCreateCart(userId);
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado: " + productId));
+                .orElseThrow(() -> new ProductNotFoundException());
 
         // Si el producto ya esta en el carrito, sumamos en canitdad en vez de tener 2 productos
         CartItem item = cartItemRepository.findByCart_User_IdAndProduct_Id(userId, productId)
