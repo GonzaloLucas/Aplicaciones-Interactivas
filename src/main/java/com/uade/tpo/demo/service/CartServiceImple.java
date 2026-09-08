@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uade.tpo.demo.entity.Cart;
 import com.uade.tpo.demo.entity.CartItem;
@@ -39,6 +40,7 @@ public class CartServiceImple implements CartService {
      * Devuelve el carrito del usuario. Si todavia no tiene uno (primera compra),
      * lo crea.
      */
+    @Transactional
     public Cart getOrCreateCart(Long userId) {
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
@@ -67,6 +69,7 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
+    @Transactional
     public CartItem addItem(Long userId, Long productId, int quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor a cero");
@@ -102,6 +105,7 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
+    @Transactional
     public void removeItem(Long userId, Long productId) {
         CartItem item = cartItemRepository.findByCart_User_IdAndProduct_Id(userId, productId)
                 .orElseThrow(() -> new CartItemNotFoundException(
@@ -112,6 +116,7 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
+    @Transactional
     public CartItem updateItemQuantity(Long userId, Long productId, int quantity) {
         if (quantity <= 0) {
             // Actualizar a 0 (o menos) equivale a sacar el producto del carrito
@@ -136,6 +141,7 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
+    @Transactional
     public void cleanCart(Long userId) {
         Cart cart = getOrCreateCart(userId);
         cartItemRepository.deleteByCart_Id(cart.getId());
@@ -176,6 +182,7 @@ public class CartServiceImple implements CartService {
                 .sum();
     }
 
+    @Transactional
     private void touchCart(Long userId) {
         Cart cart = getOrCreateCart(userId);
         cart.setUpdatedAt(LocalDateTime.now());
