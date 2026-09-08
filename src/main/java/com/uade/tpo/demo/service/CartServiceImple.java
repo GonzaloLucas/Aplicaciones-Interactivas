@@ -166,6 +166,8 @@ public class CartServiceImple implements CartService {
         });
     }
 
+    // Usa getFinalPrice() (precio con descuento aplicado si corresponde) para que el total
+    // del carrito coincida con lo que después va a cobrar el checkout.
     @Override
     public double calculateTotal(Long userId) {
         Cart cart = getOrCreateCart(userId);
@@ -174,10 +176,10 @@ public class CartServiceImple implements CartService {
         }
         return cart.getItems().stream()
                 .mapToDouble(item -> {
-                    double price = item.getProduct() != null && item.getProduct().getPrice() != null
-                            ? item.getProduct().getPrice()
+                    double finalPrice = item.getProduct() != null && item.getProduct().getFinalPrice() != null
+                            ? item.getProduct().getFinalPrice()
                             : 0.0;
-                    return price * item.getQuantity();
+                    return finalPrice * item.getQuantity();
                 })
                 .sum();
     }
