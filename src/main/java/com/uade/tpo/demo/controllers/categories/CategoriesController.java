@@ -1,5 +1,6 @@
 package com.uade.tpo.demo.controllers.categories;
 
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,7 +54,14 @@ public class CategoriesController {
         return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(toResponse(result));
     }
 
-    // Convierte una entidad Category a su DTO de respuesta
+    @PutMapping("/{categoryId}")
+    public ResponseEntity<CategoryResponse> updateCategory(
+            @PathVariable Long categoryId,
+            @RequestBody CategoryRequest categoryRequest) {
+        Category result = categoryService.updateCategory(categoryId, categoryRequest.getName(), categoryRequest.getDescription());
+        return ResponseEntity.ok(toResponse(result));
+    }
+
     private CategoryResponse toResponse(Category category) {
         return CategoryResponse.builder()
                 .id(category.getId())

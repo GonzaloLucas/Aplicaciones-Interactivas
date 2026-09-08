@@ -63,6 +63,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/orders/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/orders/**").hasRole("ADMIN")
 
+                        // Usuarios: administración de cuentas y asignación de permisos, solo ADMIN
+                        .requestMatchers("/users/**").hasRole("ADMIN")
+
                         // Rutas de administración general
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 

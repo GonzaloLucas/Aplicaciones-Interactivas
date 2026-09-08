@@ -1,5 +1,8 @@
 package com.uade.tpo.demo.controllers.cart;
 
+import java.util.Collections;
+import java.util.Map;
+
 import com.uade.tpo.demo.entity.Cart;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.service.ProductService;
@@ -88,16 +91,18 @@ public class CartController {
     }
 
     @DeleteMapping("/items/{productId}")
-    public ResponseEntity<Void> removeItem(
+    public ResponseEntity<Map<String, String>> removeItem(
             @AuthenticationPrincipal User user,
             @PathVariable Long productId) {
         cartService.removeItem(user.getId(), productId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Collections.singletonMap("message",
+                "El producto " + productId + " fue eliminado del carrito correctamente"));
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> cleanCart(@AuthenticationPrincipal User user) {
+    public ResponseEntity<Map<String, String>> cleanCart(@AuthenticationPrincipal User user) {
         cartService.cleanCart(user.getId());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Collections.singletonMap("message",
+                "El carrito fue vaciado correctamente"));
     }
 }
