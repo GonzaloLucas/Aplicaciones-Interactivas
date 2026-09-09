@@ -10,10 +10,12 @@ import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
 
 public interface CategoryService {
     public Page<Category> getCategories(PageRequest pageRequest);
-    
+    //paginacion
     public Optional<Category> getCategoryById(Long categoryId);
 
     public Category createCategory(String name, String description) throws CategoryDuplicateException;
 
     public Category updateCategory(Long categoryId, String name, String description);
+
+    public Category deleteCategory(Long categoryId);
 }

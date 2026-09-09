@@ -44,4 +44,16 @@ public class CategoryServiceImpl implements CategoryService {
         category.setDescription(description);
         return categoryRepository.save(category);
     }
+
+    @Transactional
+    public Category deleteCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException());
+
+        // Si existen productos con esta categoria (Product.category_id nullable = false),
+        // el borrado va a fallar por la restriccion de clave foránea en MySQL.
+        // Hay que reasignar o eliminar esos productos antes de borrar la categoria.
+        categoryRepository.delete(category);
+        return category;
+    }
 }

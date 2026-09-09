@@ -1,5 +1,6 @@
 package com.uade.tpo.demo.controllers.categories;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,6 +63,13 @@ public class CategoriesController {
         return ResponseEntity.ok(toResponse(result));
     }
 
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<CategoryResponse> deleteCategory(@PathVariable Long categoryId) {
+        Category result = categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok(toResponse(result));
+    }
+
+    // Convierte una entidad Category a su DTO de respuesta
     private CategoryResponse toResponse(Category category) {
         return CategoryResponse.builder()
                 .id(category.getId())
