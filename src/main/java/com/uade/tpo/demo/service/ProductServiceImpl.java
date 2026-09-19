@@ -19,7 +19,9 @@ import com.uade.tpo.demo.entity.Image;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.exceptions.CategoryNotFoundException;
 import com.uade.tpo.demo.exceptions.ProductNotFoundException;
+import com.uade.tpo.demo.repository.CartItemRepository;
 import com.uade.tpo.demo.repository.CategoryRepository;
+import com.uade.tpo.demo.repository.OrderDetailRepository;
 import com.uade.tpo.demo.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
+
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
 
 
     @Override
@@ -119,10 +127,16 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
+    @Override
     @Transactional
     public Product deleteProduct(Long id) throws ProductNotFoundException {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
+
+            cartItemRepository.deleteByProduct_Id(id);
+
+            orderDetailRepository.detachProduct(id);
+
             productRepository.deleteById(id);
             return product.get();
         }
