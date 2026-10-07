@@ -7,18 +7,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uade.tpo.demo.entity.Cart;
 import com.uade.tpo.demo.entity.CartItem;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.exceptions.CartItemNotFoundException;
 import com.uade.tpo.demo.exceptions.OutOfStockException;
+import com.uade.tpo.demo.exceptions.ProductNotFoundException;
+import com.uade.tpo.demo.exceptions.UserNotFoundException;
 import com.uade.tpo.demo.repository.CartItemRepository;
 import com.uade.tpo.demo.repository.CartRepository;
 import com.uade.tpo.demo.repository.ProductRepository;
 import com.uade.tpo.demo.repository.UserRepository;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class CartServiceImple implements CartService {
@@ -39,12 +40,13 @@ public class CartServiceImple implements CartService {
      * Devuelve el carrito del usuario. Si todavia no tiene uno (primera compra),
      * lo crea.
      */
+    @Transactional
     public Cart getOrCreateCart(Long userId) {
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     Cart cart = new Cart();
                     cart.setUser(userRepository.findById(userId)
-                            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: " + userId)));
+                            .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado: " + userId)));
                     cart.setStatus("ACTIVE");
                     cart.setCreatedAt(LocalDateTime.now());
                     cart.setUpdatedAt(LocalDateTime.now());
@@ -67,6 +69,7 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
+    @Transactional
     public CartItem addItem(Long userId, Long productId, int quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor a cero");
@@ -74,7 +77,7 @@ public class CartServiceImple implements CartService {
 
         Cart cart = getOrCreateCart(userId);
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado: " + productId));
+                .orElseThrow(() -> new ProductNotFoundException());
 
         // Si el producto ya esta en el carrito, sumamos en canitdad en vez de tener 2 productos
         CartItem item = cartItemRepository.findByCart_User_IdAndProduct_Id(userId, productId)
@@ -102,6 +105,7 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
+    @Transactional
     public void removeItem(Long userId, Long productId) {
         CartItem item = cartItemRepository.findByCart_User_IdAndProduct_Id(userId, productId)
                 .orElseThrow(() -> new CartItemNotFoundException(
@@ -112,6 +116,7 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
+    @Transactional
     public CartItem updateItemQuantity(Long userId, Long productId, int quantity) {
         if (quantity <= 0) {
             // Actualizar a 0 (o menos) equivale a sacar el producto del carrito
@@ -136,6 +141,7 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
+    @Transactional
     public void cleanCart(Long userId) {
         Cart cart = getOrCreateCart(userId);
         cartItemRepository.deleteByCart_Id(cart.getId());
@@ -160,6 +166,8 @@ public class CartServiceImple implements CartService {
         });
     }
 
+    // Usa getFinalPrice() (precio con descuento aplicado si corresponde) para que el total
+    // del carrito coincida con lo que después va a cobrar el checkout.
     @Override
     public double calculateTotal(Long userId) {
         Cart cart = getOrCreateCart(userId);
@@ -168,14 +176,15 @@ public class CartServiceImple implements CartService {
         }
         return cart.getItems().stream()
                 .mapToDouble(item -> {
-                    double price = item.getProduct() != null && item.getProduct().getPrice() != null
-                            ? item.getProduct().getPrice()
+                    double finalPrice = item.getProduct() != null && item.getProduct().getFinalPrice() != null
+                            ? item.getProduct().getFinalPrice()
                             : 0.0;
-                    return price * item.getQuantity();
+                    return finalPrice * item.getQuantity();
                 })
                 .sum();
     }
 
+    @Transactional
     private void touchCart(Long userId) {
         Cart cart = getOrCreateCart(userId);
         cart.setUpdatedAt(LocalDateTime.now());

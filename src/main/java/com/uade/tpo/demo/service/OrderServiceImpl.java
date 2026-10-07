@@ -48,7 +48,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     public Order getOrderById(Long orderId) throws OrderNotFoundException{
-        Optional<Order> order = orderRepository.findById(orderId);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User currentUser = userRepository.findUserByEmail(email);
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        Optional<Order> order = isAdmin
+                ? orderRepository.findById(orderId)
+                : orderRepository.findByIdAndUserId(orderId, currentUser.getId());
+
         if (order.isPresent()) {
             return order.get();
         }

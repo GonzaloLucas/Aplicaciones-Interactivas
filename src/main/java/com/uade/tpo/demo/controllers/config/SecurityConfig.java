@@ -24,9 +24,9 @@ public class SecurityConfig {
         private final JwtAuthenticationFilter jwtAuthFilter;
         private final AuthenticationProvider authenticationProvider;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
@@ -55,15 +55,22 @@ public class SecurityConfig {
                         // - Consultar orden por ID: ADMIN
                         // - Modificar estado o eliminar órdenes: Solo ADMIN
                         // - Crear Checkout: Usuarios autenticados (USER o ADMIN)
-                        .requestMatchers(HttpMethod.POST, "/orders/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/orders/checkout").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/orders/pay/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/orders").hasRole("ADMIN")           // Crear orden directa: solo ADMIN
                         .requestMatchers(HttpMethod.GET, "/orders").hasRole("ADMIN")            // Listar todas: solo ADMIN
                         .requestMatchers(HttpMethod.GET, "/orders/**").hasAnyRole("USER", "ADMIN") // Ver una orden por ID: USER o ADMIN
-                        .requestMatchers(HttpMethod.POST, "/orders/pay/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/orders/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/orders/**").hasRole("ADMIN")
 
+                        // Usuarios: administración de cuentas y asignación de permisos, solo ADMIN
+                        .requestMatchers("/users/**").hasRole("ADMIN")
+
                         // Rutas de administración general
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // Rutas de imagenes de productos
+                        .requestMatchers("/images/**").permitAll()
 
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

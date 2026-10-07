@@ -23,8 +23,6 @@ public interface CartService {
 
     void cleanCart(Long userId);
 
-    // operaciones de logica de negoico extra
-
     boolean validateCart(Long userId);
 
     double calculateTotal(Long userId);

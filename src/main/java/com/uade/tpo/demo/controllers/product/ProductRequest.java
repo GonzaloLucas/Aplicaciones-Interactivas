@@ -1,5 +1,7 @@
 package com.uade.tpo.demo.controllers.product;
 
+import com.uade.tpo.demo.entity.Image;
+
 import lombok.Data;
 
 @Data
@@ -8,6 +10,5 @@ public class ProductRequest {
     private String description;
     private Double price;
     private Integer stock;
-    private String image;
     private Long categoryId;
 }
