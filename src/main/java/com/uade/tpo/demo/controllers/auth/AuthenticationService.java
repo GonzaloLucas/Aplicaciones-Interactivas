@@ -1,13 +1,10 @@
-package com.uade.tpo.demo.service;
+package com.uade.tpo.demo.controllers.auth;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.uade.tpo.demo.controllers.auth.AuthenticationRequest;
-import com.uade.tpo.demo.controllers.auth.AuthenticationResponse;
-import com.uade.tpo.demo.controllers.auth.RegisterRequest;
 import com.uade.tpo.demo.controllers.config.JwtService;
 import com.uade.tpo.demo.entity.Role;
 import com.uade.tpo.demo.entity.User;
