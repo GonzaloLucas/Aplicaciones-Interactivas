@@ -11,4 +11,6 @@ public interface UserService {
     Page<User> getAllUsers(Pageable pageable);
 
     User updateUserRole(Long userId, Role role);
+
+    void deleteUser(Long userId, Long requesterId);
 }

@@ -1,8 +1,13 @@
 package com.uade.tpo.demo.controllers.user;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -42,6 +47,17 @@ public class UserController {
             @RequestBody RoleUpdateRequest request) {
         User updated = userService.updateUserRole(id, request.getRole());
         return ResponseEntity.ok(toResponse(updated));
+    }
+
+    // DELETE /users/{id} -> elimina un usuario (solo ADMIN, ver SecurityConfig).
+    // Recibe el usuario autenticado para impedir que un ADMIN se borre a sí mismo.
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteUser(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser) {
+        userService.deleteUser(id, currentUser.getId());
+        return ResponseEntity.ok(Collections.singletonMap("message",
+                "El usuario " + id + " fue eliminado correctamente"));
     }
 
     private UserResponse toResponse(User user) {

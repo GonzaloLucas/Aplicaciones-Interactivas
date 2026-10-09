@@ -77,10 +77,11 @@ public class OrdersController {
 
     private OrderResponse toResponse(Order order) {
         User user = order.getUser();
+        // Si el usuario fue eliminado, la orden se conserva con user = null
         String userName = user != null
                 ? ((user.getFirstName() != null ? user.getFirstName() : "") + " "
                         + (user.getLastName() != null ? user.getLastName() : "")).trim()
-                : null;
+                : "Usuario eliminado";
 
         List<OrderDetailResponse> details = order.getOrderDetails() == null
                 ? new ArrayList<>()

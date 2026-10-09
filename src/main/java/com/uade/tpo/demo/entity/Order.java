@@ -35,8 +35,10 @@ public class Order {
     @Column
     private LocalDateTime createdAt;
 
+    // nullable = true a propósito: si el usuario se elimina, la orden se conserva
+    // como historial de ventas con user = null (ver UserServiceImpl.deleteUser).
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
