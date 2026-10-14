@@ -9,6 +9,8 @@ public class CartItemResponse {
     private Long productId;
     private String name;
     private Double price;      // precio final del producto (con descuento aplicado, si tiene)
+    private Double originalPrice;        // precio sin descuento
+    private Double discountPercentage;   // % de descuento del producto (null o 0 si no tiene)
     private Integer quantity;
     private Double subtotal;   // price * quantity
     private String portadaBase64;

@@ -155,6 +155,9 @@ public class ProductSearchController {
                 .id(product.getId())
                 .name(product.getName())
                 .price(product.getPrice())
+                .discountPercentage(product.getDiscountPercentage())
+                .finalPrice(product.getFinalPrice())
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
                 .portadaBase64(portadaBase64)
                 .build();
     }

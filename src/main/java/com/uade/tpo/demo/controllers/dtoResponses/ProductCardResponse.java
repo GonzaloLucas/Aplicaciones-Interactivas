@@ -11,5 +11,6 @@ public class ProductCardResponse {
     private Double discountPercentage;
     private Double price;
     private Double finalPrice;
+    private Long categoryId;
     private String portadaBase64;
 }

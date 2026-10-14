@@ -154,6 +154,8 @@ public class CartController {
                 .productId(product != null ? product.getId() : null)
                 .name(product != null ? product.getName() : null)
                 .price(finalPrice)
+                .originalPrice(product != null ? product.getPrice() : null)
+                .discountPercentage(product != null ? product.getDiscountPercentage() : null)
                 .quantity(quantity)
                 .subtotal(finalPrice * quantity)
                 .portadaBase64(portadaBase64)
