@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import com.uade.tpo.demo.entity.Image;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.service.ProductSearchService;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/products/search")
 public class ProductSearchController {
@@ -128,12 +130,29 @@ public class ProductSearchController {
         return ResponseEntity.ok(products.map(this::toCardResponse));
     }
 
-    // ==================== Helper de conversión ====================
+    @GetMapping("/advanced")
+    public ResponseEntity<?> advancedSearch(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String sortType,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "9") Integer size) {
 
-    /**
-     * Convierte Product a ProductCardResponse (tarjeta de listado).
-     * Extrae solo la imagen de portada.
-     */
+        // Llamamos al servicio con todos los parámetros posibles
+        Page<Product> products = productSearchService.getAdvancedSearch(
+                name, categoryId, minPrice, maxPrice, sortType, page, size);
+
+        if (products.isEmpty()) {
+            return ResponseEntity.ok(Collections.singletonMap("message",
+                    "No se encontraron productos con los filtros seleccionados"));
+        }
+
+        return ResponseEntity.ok(products.map(this::toCardResponse));
+    }
+
+    // ==================== Helper de conversión ====================
     private ProductCardResponse toCardResponse(Product product) {
         String portadaBase64 = null;
 
@@ -144,7 +163,6 @@ public class ProductSearchController {
                         portadaBase64 = Base64.getEncoder()
                                 .encodeToString(img.getImage().getBytes(1, (int) img.getImage().length()));
                     } catch (SQLException e) {
-                        // Si falla la lectura del blob, dejamos portada como null
                     }
                     break;
                 }

@@ -16,4 +16,7 @@ public interface ProductSearchService {
     public Page<Product> getProductsByPriceRange(Double minPrice, Double maxPrice, PageRequest pageRequest);
 
     public Page<Product> getProductsByName(String name, PageRequest pageRequest);
+
+    Page<Product> getAdvancedSearch(String name, Long categoryId, Double minPrice, Double maxPrice, String sortType,
+            int page, int size);
 }
