@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 public interface OrderService {
     Order createOrder(Double total, OrderStatus status);
     Page<Order> getOrders(PageRequest pageRequest);
+    Page<Order> getMyOrders(PageRequest pageRequest);
     Order getOrderById(Long orderId);
     Order updateOrder(Long orderId, OrderStatus status, Double total);
     Order deleteOrder(Long orderId);

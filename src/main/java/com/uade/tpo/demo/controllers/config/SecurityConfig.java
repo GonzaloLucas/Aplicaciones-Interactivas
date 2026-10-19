@@ -14,15 +14,19 @@ import jakarta.servlet.DispatcherType;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
         private final JwtAuthenticationFilter jwtAuthFilter;
         private final AuthenticationProvider authenticationProvider;
+
+        public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter,
+                        AuthenticationProvider authenticationProvider) {
+                this.jwtAuthFilter = jwtAuthFilter;
+                this.authenticationProvider = authenticationProvider;
+        }
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -32,6 +36,7 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
 
                         // Autenticación (Público)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/me").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
                         // Categorías: Lectura pública, gestión solo ADMIN

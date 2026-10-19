@@ -35,6 +35,12 @@ public class OrdersController {
         return ResponseEntity.ok(orders.map(this::toResponse));
     }
 
+    @GetMapping("/my-orders")
+    public ResponseEntity<Page<OrderResponse>> getMyOrders() {
+        Page<Order> orders = orderService.getMyOrders(PageRequest.of(0, Integer.MAX_VALUE));
+        return ResponseEntity.ok(orders.map(this::toResponse));
+    }
+
     @GetMapping("/{OrderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long OrderId)
             throws OrderNotFoundException {

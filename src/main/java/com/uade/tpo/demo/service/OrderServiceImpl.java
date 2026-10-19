@@ -47,6 +47,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
+    public Page<Order> getMyOrders(PageRequest pageable) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByEmail(email);
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
+    }
+
+    @Transactional
     public Order getOrderById(Long orderId) throws OrderNotFoundException{
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
