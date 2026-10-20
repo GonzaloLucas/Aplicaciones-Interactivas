@@ -39,21 +39,23 @@ public class ImageServiceImpl implements ImageService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException());
 
-        // Si el producto no tiene imágenes, la primera subida será la portada
-        boolean tieneImagenes = !product.getImages().isEmpty();
+        boolean tienePortada = product.getImages().stream()
+                .anyMatch(Image::isEsPortada);
 
-        for (int i = 0; i < files.size(); i++) {
-            MultipartFile file = files.get(i);
-            if (!file.isEmpty()) {
-                byte[] bytes = file.getBytes();
-                Blob blob = new SerialBlob(bytes);
+        if (files != null) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    byte[] bytes = file.getBytes();
+                    Blob blob = new SerialBlob(bytes);
 
-                Image img = Image.builder()
-                        .image(blob)
-                        .esPortada(!tieneImagenes && i == 0) // Portada solo si no tenía imágenes previas
-                        .build();
+                    Image image = Image.builder()
+                            .image(blob)
+                            .esPortada(!tienePortada)
+                            .build();
 
-                product.addImage(img); // Vincula ambos lados de la relación
+                    product.addImage(image);
+                    tienePortada = true;
+                }
             }
         }
 
@@ -65,7 +67,17 @@ public class ImageServiceImpl implements ImageService {
     public void deleteImage(Long imageId) {
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new ImageNotFoundException("Imagen no encontrada: " + imageId));
+        Product product = image.getProduct();
+        boolean eraPortada = image.isEsPortada();
+
+        product.getImages().remove(image);
         imageRepository.delete(image);
+
+        if (eraPortada && !product.getImages().isEmpty()) {
+            Image nuevaPortada = product.getImages().get(0);
+            nuevaPortada.setEsPortada(true);
+            imageRepository.save(nuevaPortada);
+        }
     }
 
     @Override

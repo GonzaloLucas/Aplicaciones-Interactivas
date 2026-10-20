@@ -1,5 +1,6 @@
 package com.uade.tpo.demo.controllers.product;
 
+import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Collections;
@@ -155,17 +156,30 @@ public class ProductSearchController {
     // ==================== Helper de conversión ====================
     private ProductCardResponse toCardResponse(Product product) {
         String portadaBase64 = null;
+        Image portada = null;
 
         if (product.getImages() != null) {
-            for (Image img : product.getImages()) {
-                if (img.isEsPortada() && img.getImage() != null) {
-                    try {
-                        portadaBase64 = Base64.getEncoder()
-                                .encodeToString(img.getImage().getBytes(1, (int) img.getImage().length()));
-                    } catch (SQLException e) {
+            for (Image image : product.getImages()) {
+                if (image.getImage() != null) {
+                    if (portada == null) {
+                        portada = image;
                     }
-                    break;
+                    if (image.isEsPortada()) {
+                        portada = image;
+                        break;
+                    }
                 }
+            }
+        }
+
+        if (portada != null) {
+            try {
+                Blob blob = portada.getImage();
+                portadaBase64 = Base64.getEncoder()
+                        .encodeToString(blob.getBytes(1, (int) blob.length()));
+            } catch (SQLException e) {
+                throw new IllegalStateException(
+                        "No se pudo leer la portada del producto " + product.getId(), e);
             }
         }
 

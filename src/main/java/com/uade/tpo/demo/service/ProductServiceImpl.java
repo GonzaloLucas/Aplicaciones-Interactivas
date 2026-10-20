@@ -68,20 +68,22 @@ public class ProductServiceImpl implements ProductService {
         product.setStock(request.getStock());
         product.setCategory(category);
 
-        // Procesamiento de las imágenes y asignación de portada
         if (files != null && !files.isEmpty()) {
-            for (int i = 0; i < files.size(); i++) {
-                MultipartFile file = files.get(i);
+            boolean tienePortada = product.getImages().stream()
+                    .anyMatch(Image::isEsPortada);
+
+            for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
                     byte[] bytes = file.getBytes();
                     Blob blob = new SerialBlob(bytes);
 
-                    Image img = Image.builder()
+                    Image image = Image.builder()
                             .image(blob)
-                            .esPortada(i == 0) // La primera imagen (índice 0) será la portada
+                            .esPortada(!tienePortada)
                             .build();
 
-                    product.addImage(img);
+                    product.addImage(image);
+                    tienePortada = true;
                 }
             }
         }
@@ -105,21 +107,22 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(request.getPrice());
         product.setStock(request.getStock());
 
-        // Procesar nuevas imágenes si se enviaron
         if (files != null && !files.isEmpty()) {
-            boolean tieneImagenes = !product.getImages().isEmpty();
-            for (int i = 0; i < files.size(); i++) {
-                MultipartFile file = files.get(i);
+            boolean tienePortada = product.getImages().stream()
+                    .anyMatch(Image::isEsPortada);
+
+            for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
                     byte[] bytes = file.getBytes();
                     Blob blob = new SerialBlob(bytes);
 
-                    Image img = Image.builder()
+                    Image image = Image.builder()
                             .image(blob)
-                            .esPortada(!tieneImagenes && i == 0)
+                            .esPortada(!tienePortada)
                             .build();
 
-                    product.addImage(img);
+                    product.addImage(image);
+                    tienePortada = true;
                 }
             }
         }
