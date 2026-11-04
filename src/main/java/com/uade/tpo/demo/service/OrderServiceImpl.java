@@ -144,7 +144,7 @@ public class OrderServiceImpl implements OrderService {
             productRepository.save(product);
         }
 
-        Order order = new Order(total, user, OrderStatus.PENDING_PAYMENT);
+        Order order = new Order(total, user, OrderStatus.PAID);
         order.setOrderDetails(orderDetails);
 
         for (OrderDetail detail : orderDetails) {
