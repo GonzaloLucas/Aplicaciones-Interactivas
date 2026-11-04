@@ -2,6 +2,7 @@ package com.uade.tpo.demo.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -64,8 +65,8 @@ public class CartServiceImple implements CartService {
     }
 
     @Override
-    public Page<CartItem> getCartItems(Long userId, PageRequest pageRequest) {
-        return cartItemRepository.findByCart_User_Id(userId, pageRequest);
+    public List<CartItem> getCartItems(Long userId) {
+        return cartItemRepository.findByCart_User_Id(userId);
     }
 
     @Override

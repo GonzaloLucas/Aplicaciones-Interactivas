@@ -6,12 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.uade.tpo.demo.entity.CartItem;
+import java.util.List;
 
 public interface CartService {
 
     Cart getOrCreateCart(Long userId);
 
-    Page<CartItem> getCartItems(Long userId, PageRequest pageRequest);
+    List<CartItem> getCartItems(Long userId);
 
     CartItem getCartItem(Long userId, Long productId);
 

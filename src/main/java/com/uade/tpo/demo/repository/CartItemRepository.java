@@ -1,5 +1,6 @@
 package com.uade.tpo.demo.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -12,7 +13,7 @@ import com.uade.tpo.demo.entity.CartItem;
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-    Page<CartItem> findByCart_User_Id(Long userId, Pageable pageable);
+    List<CartItem> findByCart_User_Id(Long userId);
 
     Optional<CartItem> findByCart_User_IdAndProduct_Id(Long userId, Long productId);
 

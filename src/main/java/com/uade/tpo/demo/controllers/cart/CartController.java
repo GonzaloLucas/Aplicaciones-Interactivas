@@ -49,15 +49,14 @@ public class CartController {
     }
 
     @GetMapping("/items")
-    public ResponseEntity<Page<CartItemResponse>> getCartItems(
-            @AuthenticationPrincipal User user,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        PageRequest pageRequest = (page == null || size == null)
-                ? PageRequest.of(0, Integer.MAX_VALUE)
-                : PageRequest.of(page, size);
-        Page<CartItem> items = cartService.getCartItems(user.getId(), pageRequest);
-        return ResponseEntity.ok(items.map(this::toItemResponse));
+    public ResponseEntity<List<CartItemResponse>> getCartItems(
+            @AuthenticationPrincipal User user) {
+        List<CartItem> items = cartService.getCartItems(user.getId());
+        return ResponseEntity.ok(
+                items.stream()
+                        .map(this::toItemResponse)
+                        .toList()
+        );
     }
 
     @GetMapping("/items/{productId}")
