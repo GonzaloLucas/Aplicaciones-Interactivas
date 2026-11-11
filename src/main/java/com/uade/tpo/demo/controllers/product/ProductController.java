@@ -168,6 +168,7 @@ public class ProductController {
                 .price(product.getPrice())
                 .discountPercentage(product.getDiscountPercentage())
                 .finalPrice(product.getFinalPrice())
+                .stock(product.getStock())
                 .portadaBase64(portadaBase64)
                 .build();
     }

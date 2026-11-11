@@ -10,6 +10,7 @@ public class ProductCardResponse {
     private String name;
     private Double discountPercentage;
     private Double price;
+    private Integer stock;
     private Double finalPrice;
     private Long categoryId;
     private String portadaBase64;
